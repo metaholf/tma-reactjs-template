@@ -5,7 +5,6 @@ import {
   viewport,
   init as initSDK,
   mockTelegramEnv,
-  type ThemeParams,
   retrieveLaunchParams,
   emitEvent,
   miniApp,
@@ -38,12 +37,13 @@ export async function init(options: {
     mockTelegramEnv({
       onEvent(event, next) {
         if (event.name === 'web_app_request_theme') {
-          let tp: ThemeParams = {};
+          type SnakeThemeParams = Partial<Record<string, `#${string}`>>;
+          let tp: SnakeThemeParams = {};
           if (firstThemeSent) {
             tp = themeParams.state();
           } else {
             firstThemeSent = true;
-            tp ||= retrieveLaunchParams().tgWebAppThemeParams;
+            tp ||= retrieveLaunchParams().tgWebAppThemeParams as SnakeThemeParams;
           }
           return emitEvent('theme_changed', { theme_params: tp });
         }
